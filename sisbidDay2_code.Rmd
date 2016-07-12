@@ -12,6 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 Installing google sheets
 ```{r}
 # install.packages('googlesheets')
+#library(devtools)
+#install_github("jennybc/googlesheets")
 library(googlesheets)
 ```
 
@@ -23,5 +25,10 @@ gsurl1 = gs_url(sheets_url)
 dat = gs_read(gsurl1)
 date_accessed = date()
 
+```
+
+Doing the lab
+```{r}
+https://docs.google.com/spreadsheets/d/103vUoftv2dLNZ_FcAz08b5ptIkWN4W2RaFn7VF39FJ8/pubhtml
 ```
 
