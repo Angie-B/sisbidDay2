@@ -49,8 +49,13 @@ Do students have more than 2 years of experience with R?
 ```{r yearsofR}
 #This way of doing it introduces NAs b/c some folks didn't enter just a number
 dat$twoyears <- as.numeric(dat$`Years of R experience`)>2
+
+```
+
+Didn't finish the factor part
+```{r factors}
 # create factor "skilled" and "learning"
-factorYears <- 2
+factorYears <- NULL
 ```
 
 
@@ -59,9 +64,33 @@ load lib/install stuff
 ```{r installJSON}
 # install.packages("jsonlite")
 library(jsonlite)
+
+github_url = "https://api.github.com/users/jtleek/repos"
 jsonData <- fromJSON(github_url)
 dim(jsonData)
-
+names(jsonData)
 ```
 
+exploring data -- 
+JSON is super flexible. COlumns can have nested structure in them.
+```{r exploring}
+## Test whether there are nested dataframes
+table(sapply(jsonData, class))
+dim(jsonData$owner)
+names(jsonData$owner)
+```
+
+
+JSON lab
+```{r JSONlab}
+github_url = "https://api.github.com/users/hadley/repos"
+hadleyData <- fromJSON(github_url)
+names(hadleyData)
+
+##number of stars
+hadleyData$stargazers_count
+
+##number of open issues
+hadleyData$open_issues
+```
 
