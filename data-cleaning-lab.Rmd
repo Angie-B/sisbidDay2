@@ -1,0 +1,154 @@
+---
+title: "Data Cleaning lab"
+author: "Angie Boysen"
+date: "July 12, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(readr)
+library(stringr)
+```
+
+### A. "Real Property Taxes" Dataset 
+
+Download the "real property taxes" dataset from the website (via OpenBaltimore), 
+he data is located here (note you don\'t need to unzip it to read it into R):
+http://sisbid.github.io/Module1/data/real_property_tax.csv.gz
+
+1. Read the Property Tax data into R and call it the variable `tax`
+```{r read}
+tax <- read_csv("real_property_tax.csv.gz")
+str(tax)
+head(tax,2)
+anyNA(tax$propertyAddress)
+```
+
+2. How many addresses pay property taxes? 
+```{r number}
+nrow(tax[-which(is.na(tax$propertyAddress)),])
+```
+ 
+3. What is the total city and state tax paid?
+```{r }
+totalCity <- sum(tax$cityTax)
+new_city <- tax
+new_city <- new_city %>% mutate(cityTax = cityTax %>%
+                                str_replace(fixed("$"),"") %>%
+                                as.numeric)
+totalCity <- sum(new_city$cityTax, na.rm = T)
+totalCity
+
+new_state <- new_city
+new_state <- new_state %>% mutate(stateTax = stateTax %>%
+                                str_replace(fixed("$"),"") %>%
+                                as.numeric)
+totalState <- sum(new_state$stateTax, na.rm = T)
+totalState
+tax <- new_state
+```
+
+The total city tax is `r totalCity`, and the total state tax is `r totalState`.
+
+4. How many observations/properties are in each residence code?
+```{r resCode}
+anyNA(tax$resCode)
+table(tax$resCode)
+```
+
+
+5. What is the 75th percentile of city and state tax paid by residence code?
+```{r}
+codes <- unique(tax$resCode)
+# perc75 <- c()
+# for(i in 1:length(codes)){
+#      city <- quantile(tax$cityTax[tax$resCode == codes[i]], na.rm = T)["75%"]
+#      names(city) <- paste(codes[i],"city", tax)
+#      state <-quantile(tax$stateTax[tax$resCode == codes[i]], na.rm = T)["75%"]
+#      names(state) <- paste(codes[i],"state", tax)
+# 
+#      perc75 <- c(perc75,  city, state)
+# }
+# perc75
+ss.tax <- filter(tax,resCode == codes[1])
+not.princ <- sapply(ss.tax[,str_subset(names(ss.tax),"Tax")],function(x) quantile(x,na.rm=T)["75%"])
+ss.tax <- filter(tax,resCode == codes[2])
+princ <- sapply(ss.tax[,str_subset(names(ss.tax),"Tax")],function(x) quantile(x,na.rm=T)["75%"])
+not.princ
+princ
+```
+
+
+6. Subset the data to only retain those houses that are principal residences and describe the distribution of property taxes on these residences.
+```{r}
+ss.tax <- filter(tax,resCode == codes[2])
+sapply(ss.tax[,str_subset(names(ss.tax),"Tax")],quantile, na.rm=T)
+
+```
+
+
+7. Convert the 'lotSize' variable to a numeric square feet variable. Tips:
+* Look at the data 
+* Assume hyphens represent inches within square foot meassuremnts 
+* Assume decimals within acreage measurements
+* 1 acre = 43560 square feet
+* Look at the data 
+```{r}
+acres.rows <- grep("ACRES",tax$lotSize)
+new_tax <- tax
+new_tax[acres.rows,] <- new_tax[acres.rows,] %>% mutate(lotSize = lotSize %>%
+                                str_replace(("ACRES"),"") %>%
+                                str_trim())
+
+dash.rows <- grep("-",new_tax$lotSize,fixed = T)
+```
+
+
+### B. "Baltimore Salary 2015" Dataset 
+
+Download the "Salary 2015" Dataset from the website (via OpenBaltimore), which is located here:
+http://sisbid.github.io/Module1/data//Baltimore_City_Employee_Salaries_FY2015.csv
+```{r}
+salary <- read.csv("Baltimore_City_Employee_Salaries_FY2015.csv")
+names(salary)
+```
+
+8. Make an object called health.sal using the salaries data set,	with only agencies of those with "fire" (or any forms), if any, in the name
+```{r}
+health.sal <- salary %>% filter(str_detect(Agency,"Fire"))
+```
+
+9. Make a data set called trans which contains only agencies that contain "TRANS".
+```{r}
+trans <- salary %>% filter(str_detect(Agency,"TRANS"))
+```
+
+10. What is/are the profession(s) of people who have "abra" in their name for Baltimore's Salaries?
+```{r}
+abra <- salary %>% filter(str_detect(ï..name,"Abra"))
+unique(abra$JobTitle)
+```
+
+
+11. What is the distribution of annual salaries look like? What is the IQR?
+```{r}
+salary <- salary %>% mutate(AnnualSalary = AnnualSalary %>%
+                                str_replace(fixed("$"),"") %>%
+                                as.numeric)
+quantile(salary$AnnualSalary)
+```
+
+
+12. Convert HireDate to the `Date` class - plot Annual Salary vs Hire Date
+```{r}
+salary <- salary %>% mutate(HireDate = HireDate %>%
+                                 as.character %>%
+                                 as.Date("%m/%d/%y"))
+plot(y=salary$AnnualSalary,x=salary$HireDate)
+```
+
+13. Plot annual salary versus hire date.	Hint: first convert to numeric and date respectively
+
+14. Create a smaller dataset that only includes the Police Department, Fire Department and Sheriff's Office. How many employees are in this new dataset?
