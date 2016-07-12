@@ -94,3 +94,22 @@ hadleyData$stargazers_count
 hadleyData$open_issues
 ```
 
+## Web scraping
+With rvest package
+Identify the URL you want to scrape
+```{r webscraping1}
+recount_url = "http://bowtie-bio.sourceforge.net/recount/"
+# install.packages("rvest")
+library(rvest)
+htmlfile = read_html(recount_url)
+```
+
+We just want the table from that URL. Use the xpath for that data.
+``` {r justthesubset}
+nds = html_nodes(htmlfile, xpath='//*[@id="recounttab"]/table')
+dat = html_table(nds)
+dat = as.data.frame(dat)
+head(dat)
+
+```
+
