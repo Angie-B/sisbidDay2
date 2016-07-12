@@ -8,23 +8,88 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+### Data Cleaning
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+Missing data with logicals
+```{r}
+x <- c(1,2,3,NA,7,1)
+y <- 1:6
+(x == 0 | x==2) & !is.na(x)
+x %in% c(0,2)
 ```
 
-## Including Plots
+exploring data:
+table will tabulate how many things there are in each catigory - doesn't show NAs unless you ask it to
+```{r table}
+x
+table(x)
+table(x, useNA = "ifany")
+table(x, useNA = "always")
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+tab <- table(c(0,1,2,3,2,3,3,2,2,3), c(0,1,2,3,2,3,3,4,4,3),dnn=c("x","y"))
+tab
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Recoding to missing
+```{r recoding}
+ages <- c(23,21,50,44,-999,12)
+range(ages)
+ages[ages==-999] <- NA
+range(ages,na.rm = T)
+```
+
+recode missing to something
+```{r recode2}
+ages[is.na(ages)] <- -999
+ages
+```
+
+Playing with Salary FY2104 data
+```{r}
+any(is.na(Sal$Name))
+
+data$gender[data$gender %in% c("Male",'male','m','M')] <- "male"
+
+table(gender)
+```
+
+String functions
+- toupper(), tolower()
+- str_trim() in stringr package or trimws() in base will trim whitespace
+- nchar() number of characters in string
+- paste()
+- paste0() default is no space between
+
+## Splitting, finding, replacing with Regular Expressions
+What are regular expressions?
+- ways to search
+- find function on steriods:
+
+. matches any single character
+* means repeat as many (even if 0) more times the last character
+? makes the last thing optional
+^ matches the start of the vector ^a - starts with "a"
+$ matches the end of the vector b$ - ends with "b"
+
+```{r splitting}
+x <- c("Angie.Boysen", "Angie","Kelsey", "Boysen")
+str_split(x,fixed("."))
+str_split(x, "y" )
+```
+
+Find functions
+```{r grep}
+grep("oy",x)
+grep("oy",x, value = T)
+str_detect(x, "oy")
+str_subset(x, "oy")
+str_extract(x, "oy")
+```
+
+changing character numbers into numbers
+use sub() and gsub()
+```{r}
+
+```
+
+

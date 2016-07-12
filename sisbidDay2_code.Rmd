@@ -222,9 +222,10 @@ head(P53_dat$Transcript,2)
 ```
 
 ENSG00000157764 = BRAF Ensemble ID
-
+Or I could look up how to use a symbol
 ```{r ensembl3}
-BRAF_dat = fromJSON("http://rest.ensembl.org//lookup/id/ENSG00000157764?content-type=application/json;expand=1")
+BRAF_dat = fromJSON("http://rest.ensembl.org/lookup/symbol/homo_sapiens/BRAF?content-type=application/json;expand=1")
+# BRAF_dat = fromJSON("http://rest.ensembl.org//lookup/id/ENSG00000157764?content-type=application/json;expand=1")
 names(BRAF_dat)
 names(BRAF_dat$Transcript)
 head(BRAF_dat$Transcript,2)
