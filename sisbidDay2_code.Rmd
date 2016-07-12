@@ -115,3 +115,44 @@ dat <- dat[-1,]
 head(dat)
 ```
 
+
+## APIs - application programming interfaces
+This is  way that someone exposes a large dataset to a lot of people in a way that is controled so that they get access to lots of stuff but not all the other stuff/details.
+Every social media and new website usually have these.
+Google "developers" and "name of website" and you'll probabl find it.
+NCBI has these too! PubMed! Science stuff FTW!
+
+Look and see if someone built a package to interface with the API. 
+On rOpenSci
+
+Example: figshare
+
+```{r figshare}
+# install.packages("rfigshare")
+library(rfigshare)
+```
+
+Searching figshare for Jeff - need a figshare account for this...
+``` {r chunck14}
+## need a password for this part
+# leeksearch = fs_search("Leek")
+
+# length(leeksearch)
+# leeksearch[[1]]
+```
+
+If you can't find a pre-built API interface
+```{r githubAPI}
+# install.packages("httr")
+library(httr)
+
+query_url = "https://api.github.com/search/repositories?q=created:2014-08-13+language:r+-user:cran"
+req = GET(query_url)
+names(content(req))
+```
+
+Example with fitbit
+- go to dev.fitbit.com
+- create an 'app' in r with your key and secret
+- authenticate/allow accesss
+- get the data you want and do what you want
