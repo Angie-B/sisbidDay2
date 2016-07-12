@@ -7,10 +7,11 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
 ```
 
 Installing google sheets
-```{r}
+```{r install}
 # install.packages('googlesheets')
 #library(devtools)
 #install_github("jennybc/googlesheets")
@@ -18,7 +19,7 @@ library(googlesheets)
 ```
 
 Reading a google sheet
-```{r}
+```{r firstread}
 sheets_url = "https://docs.google.com/spreadsheets/d/18KQQd4LY5k8Ucux1MvWCsQGQJlvd0ECTnn-3ixdOKFM/pubhtml"
 
 gsurl1 = gs_url(sheets_url)
@@ -28,11 +29,23 @@ date_accessed = date()
 ```
 
 Doing the lab
-```{r}
+```{r gslabImport}
 sheets_url <- "https://docs.google.com/spreadsheets/d/103vUoftv2dLNZ_FcAz08b5ptIkWN4W2RaFn7VF39FJ8/pubhtml"
 gsurl1 = gs_url(sheets_url)
 dat = gs_read(gsurl1)
 
 dat2cols <- gs_read(gsurl1, range = cell_cols(1:2))
+```
+
+How many students have entered data? 
+``` {r gslabstudentCount}
+dat2cols <- dat2cols[!is.na(dat2cols$UW),]
+nStudents <- nrow(dat2cols)
+nStudents
+```
+
+Do students have more than 2 years of experience with R?
+```{r yearsofR}
+dat$twoyears <- as.numeric(dat$`Years of R experience`)>2
 ```
 
