@@ -29,6 +29,10 @@ date_accessed = date()
 
 Doing the lab
 ```{r}
-https://docs.google.com/spreadsheets/d/103vUoftv2dLNZ_FcAz08b5ptIkWN4W2RaFn7VF39FJ8/pubhtml
+sheets_url <- "https://docs.google.com/spreadsheets/d/103vUoftv2dLNZ_FcAz08b5ptIkWN4W2RaFn7VF39FJ8/pubhtml"
+gsurl1 = gs_url(sheets_url)
+dat = gs_read(gsurl1)
+
+dat2cols <- gs_read(gsurl1, range = cell_cols(1:2))
 ```
 
