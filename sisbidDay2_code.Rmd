@@ -34,6 +34,7 @@ sheets_url <- "https://docs.google.com/spreadsheets/d/103vUoftv2dLNZ_FcAz08b5ptI
 gsurl1 = gs_url(sheets_url)
 dat = gs_read(gsurl1)
 
+#read just the forst two rows
 dat2cols <- gs_read(gsurl1, range = cell_cols(1:2))
 ```
 
@@ -46,6 +47,21 @@ nStudents
 
 Do students have more than 2 years of experience with R?
 ```{r yearsofR}
+#This way of doing it introduces NAs b/c some folks didn't enter just a number
 dat$twoyears <- as.numeric(dat$`Years of R experience`)>2
+# create factor "skilled" and "learning"
+factorYears <- 2
 ```
+
+
+## doing JSON stuff now
+load lib/install stuff
+```{r installJSON}
+# install.packages("jsonlite")
+library(jsonlite)
+jsonData <- fromJSON(github_url)
+dim(jsonData)
+
+```
+
 
