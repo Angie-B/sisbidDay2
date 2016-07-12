@@ -19,7 +19,7 @@ library(googlesheets)
 ```
 
 Reading a google sheet
-```{r firstread}
+```{r firstread, cache=TRUE}
 sheets_url = "https://docs.google.com/spreadsheets/d/18KQQd4LY5k8Ucux1MvWCsQGQJlvd0ECTnn-3ixdOKFM/pubhtml"
 
 gsurl1 = gs_url(sheets_url)
@@ -98,21 +98,21 @@ hadleyData$open_issues
 With rvest package
 Identify the URL you want to scrape
 ```{r webscraping1}
-recount_url = "http://bowtie-bio.sourceforge.net/recount/"
+# recount_url = "http://bowtie-bio.sourceforge.net/recount/"
 # install.packages("rvest")
 library(rvest)
-htmlfile = read_html(recount_url)
+# htmlfile = read_html(recount_url)
 ```
 
 We just want the table from that URL. Use the xpath for that data.
 ``` {r justthesubset}
-nds = html_nodes(htmlfile, xpath='//*[@id="recounttab"]/table')
-dat = html_table(nds)
-dat = as.data.frame(dat)
-head(dat)
-names(dat) <- dat[1,]
-dat <- dat[-1,]
-head(dat)
+# nds = html_nodes(htmlfile, xpath='//*[@id="recounttab"]/table')
+# dat = html_table(nds)
+# dat = as.data.frame(dat)
+# head(dat)
+# names(dat) <- dat[1,]
+# dat <- dat[-1,]
+# head(dat)
 ```
 
 
@@ -198,3 +198,34 @@ text <- paste(dat[,3], collapse=" ")
 wordcloud(text,max.words=50)
 ```
 
+## API Lab
+
+Let's play around with the Ensembl API (http://rest.ensembl.org/) for extracting informtion. This is an open API so you don't need a developer account.
+
+Download information on Oct4 from Ensembl
+```{r ensembl}
+oct4_dat = fromJSON("http://rest.ensembl.org//lookup/id/ENSG00000204531?content-type=application/json;expand=1")
+summary(oct4_dat)
+names(oct4_dat)
+class(oct4_dat$Transcript)
+names(oct4_dat$Transcript)
+head(oct4_dat$Transcript,2)
+```
+
+The Ensembl ID for the gene P53 is ENSG00000141510. How do you think you'd change the command above to look up this gene?
+
+```{r ensembl2}
+P53_dat = fromJSON("http://rest.ensembl.org//lookup/id/ENSG00000141510?content-type=application/json;expand=1")
+names(P53_dat)
+names(P53_dat$Transcript)
+head(P53_dat$Transcript,2)
+```
+
+ENSG00000157764 = BRAF Ensemble ID
+
+```{r ensembl3}
+BRAF_dat = fromJSON("http://rest.ensembl.org//lookup/id/ENSG00000157764?content-type=application/json;expand=1")
+names(BRAF_dat)
+names(BRAF_dat$Transcript)
+head(BRAF_dat$Transcript,2)
+```
