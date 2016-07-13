@@ -23,6 +23,7 @@ http://sisbid.github.io/Module1/data/real_property_tax.csv.gz
 tax <- read_csv("real_property_tax.csv.gz")
 str(tax)
 head(tax,2)
+table(complete.cases(tax))
 anyNA(tax$propertyAddress)
 ```
 
@@ -33,7 +34,7 @@ nrow(tax[-which(is.na(tax$propertyAddress)),])
  
 3. What is the total city and state tax paid?
 ```{r }
-totalCity <- sum(tax$cityTax)
+# totalCity <- sum(tax$cityTax)
 new_city <- tax
 new_city <- new_city %>% mutate(cityTax = cityTax %>%
                                 str_replace(fixed("$"),"") %>%
@@ -62,16 +63,6 @@ table(tax$resCode)
 5. What is the 75th percentile of city and state tax paid by residence code?
 ```{r}
 codes <- unique(tax$resCode)
-# perc75 <- c()
-# for(i in 1:length(codes)){
-#      city <- quantile(tax$cityTax[tax$resCode == codes[i]], na.rm = T)["75%"]
-#      names(city) <- paste(codes[i],"city", tax)
-#      state <-quantile(tax$stateTax[tax$resCode == codes[i]], na.rm = T)["75%"]
-#      names(state) <- paste(codes[i],"state", tax)
-# 
-#      perc75 <- c(perc75,  city, state)
-# }
-# perc75
 ss.tax <- filter(tax,resCode == codes[1])
 not.princ <- sapply(ss.tax[,str_subset(names(ss.tax),"Tax")],function(x) quantile(x,na.rm=T)["75%"])
 ss.tax <- filter(tax,resCode == codes[2])
@@ -95,13 +86,22 @@ sapply(ss.tax[,str_subset(names(ss.tax),"Tax")],quantile, na.rm=T)
 * Assume decimals within acreage measurements
 * 1 acre = 43560 square feet
 * Look at the data 
+
+acres first
 ```{r}
-acres.rows <- grep("ACRES",tax$lotSize)
+acres.rows <- grep("AC.*",tax$lotSize)
 new_tax <- tax
 new_tax[acres.rows,] <- new_tax[acres.rows,] %>% mutate(lotSize = lotSize %>%
-                                str_replace(("ACRES"),"") %>%
+                                str_replace(("AC.*"),"") %>%
                                 str_trim())
-
+```
+SQFT
+```{r}
+sqft.rows <- grep("SQFT",tax$lotSize)
+new_tax[sqft.rows,] <- new_tax[sqft.rows,] %>% mutate(lotSize = lotSize %>%
+                                str_replace("SQFT","") %>%
+                                str_replace(fixed(","),"") %>%
+                                str_trim)
 dash.rows <- grep("-",new_tax$lotSize,fixed = T)
 ```
 
@@ -138,11 +138,14 @@ salary <- salary %>% mutate(AnnualSalary = AnnualSalary %>%
                                 str_replace(fixed("$"),"") %>%
                                 as.numeric)
 quantile(salary$AnnualSalary)
+IQR(salary$AnnualSalary)
 ```
 
 
 12. Convert HireDate to the `Date` class - plot Annual Salary vs Hire Date
 ```{r}
+class(salary$HireDate)
+salary$HireDate[1:10]
 salary <- salary %>% mutate(HireDate = HireDate %>%
                                  as.character %>%
                                  as.Date("%m/%d/%y"))
